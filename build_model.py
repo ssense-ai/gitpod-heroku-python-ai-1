@@ -4,8 +4,8 @@ import pandas as pd
 #データ分割用
 from sklearn.model_selection import train_test_split
 
-#XGBoost
-import xgboost as xgb
+#LightGBM
+import lightgbm as lgb
 
 #pickle
 import pickle
