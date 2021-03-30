@@ -4,6 +4,6 @@ COPY . /app
 
 RUN ["apt-get", "update"]
 RUN ["apt-get", "-y", "install", "build-essential"]
-RUN ["pip3", "install", "Flask", "pytesseract", "flask-cors"]
+RUN ["pip3", "install", "-r", "requirements.txt"]
 
 CMD python /app/server.py
