@@ -7,6 +7,9 @@ from sklearn.model_selection import train_test_split
 #XGBoost
 import xgboost as xgb
 
+#pickle
+import pickle
+
 #データ読み込み
 df_train = pd.read_csv("train.csv")
 df_test = pd.read_csv("test.csv")
@@ -52,4 +55,4 @@ num_round = 100
 model = lgb.train(params, lgb_train, num_boost_round = num_round)
 
 #モデルを保存
-
+pickle.dump(model, open("lgb_model.pickle", "wb"))
