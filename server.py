@@ -13,7 +13,7 @@ import traceback
 from flask import Flask, send_from_directory, jsonify, request
 from flask_cors import CORS, cross_origin
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='node_modules')
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.INFO)
 CORS(app)
