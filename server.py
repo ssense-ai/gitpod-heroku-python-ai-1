@@ -35,7 +35,7 @@ def predict_worker():
                 print('process:' + predict_request['id'])
                 try:
                     prediction_result = predict(predict_request['data'])
-                    result_dict[predict_request['id']] = {'result': prediction_result,
+                    result_dict[predict_request['id']] = {'result': prediction_result.to_csv(),
                                                      'time': datetime.datetime.now(),
                                                      'error': None }
                     print('success:' + predict_request['id'])

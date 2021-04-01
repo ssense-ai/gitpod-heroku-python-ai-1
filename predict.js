@@ -16,7 +16,7 @@ window.addEventListener( "DOMContentLoaded", function() {
   const execPredict = async ( event ) => {
     let modalProgress = document.getElementById( "progress-modal" );
     let progressCaption = document.getElementById( "progress-caption" );
-    progressCaption.innerHTML = "画像から文字を認識しています";
+    progressCaption.innerHTML = "予測の実行準備をしています";
  
     modalProgress.classList.toggle( "is-active" );
  　 
@@ -60,7 +60,12 @@ window.addEventListener( "DOMContentLoaded", function() {
            progressCaption.innerHTML = "予測実行の取得に失敗しました。";
            predictResult = "実行失敗";
            await new Promise(r => setTimeout(r,2000));
+      } else {
+        progressCaption.innerHTML = "予測が完了しました。";
+        await new Promise(r => setTimeout(r,1000));          
       }
+
+
     } catch (e) {
       progressCaption.innerHTML = "予測実行サーバーの呼び出しに失敗しました。";
       await new Promise(r => setTimeout(r,2000));
@@ -68,8 +73,8 @@ window.addEventListener( "DOMContentLoaded", function() {
 
     modalProgress.classList.toggle( "is-active" );
 
-    let target = document.getElementById( "originalText" );
-    target.value = ocrresult;
+    let target = document.getElementById( "resultText" );
+    target.value = predictResult;
   };
   let btnExecPredict = document.getElementById( "execPredict" );
   btnExecPredict.addEventListener( "click", execPredict );
