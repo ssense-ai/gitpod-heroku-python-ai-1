@@ -23,9 +23,7 @@ window.addEventListener( "DOMContentLoaded", function() {
     if ( localServerFlag )
     {
       try {
-        let url = "/predict"
-
-        const fetch_predict_res = await fetch(url, {
+        const fetch_predict_res = await fetch("/predict", {
           method: "POST",
           headers: { "Accept": "application/json", "Content-Type": "application/json"},
           body: JSON.stringify({"type": "predict",
@@ -47,7 +45,7 @@ window.addEventListener( "DOMContentLoaded", function() {
         resultparams.set("type", "result");
         resultparams.set("requestid", predict_request_id);
         for (let i = 0;  i < 30;  i++) {
-          const echo_res = await fetch(url + '?' + resultparams.toString())
+          const echo_res = await fetch("/result" + '?' + resultparams.toString())
           const result_result = await echo_res.json()
           if ( "result" in result_result && 
                "status" in result_result &&
