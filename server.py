@@ -31,10 +31,10 @@ def predict_worker():
         if not prediction_queue.empty():
             predict_request = prediction_queue.get()
             print('found queue')
-            if 'id' in predict_request:
+            if 'id' in predict_request and 'data' in predict_request:
                 print('process:' + predict_request['id'])
                 try:
-                    prediction_result = predict()
+                    prediction_result = predict(predict_request['data'])
                     result_dict[predict_request['id']] = {'result': prediction_result,
                                                      'time': datetime.datetime.now(),
                                                      'error': None }
@@ -64,8 +64,12 @@ def predict(test_data):
     #データ読み込み
     df_test = pd.read_csv("test.csv")
 
+    df_test.index = df_test["Id"]
+    df_test.drop("Id", axis = 1, inplace = True)
+    df_test = pd.get_dummies(df_test, drop_first=True)
+
     #予測
-    prediction_LG = model.predict(df_test)
+    prediction_LG = model.predict(df_test, predict_disable_shape_check = True)
 
     #小数を丸めている
     prediction_LG = np.round(prediction_LG)
@@ -88,9 +92,9 @@ def root_js():
 
 @app.route('/predict', methods=['POST'])
 @cross_origin(origin='*')
-def process_ocr():
+def process_predict():
     try:
-        predict_request_id = 'ocr_recognize_id-' + str(uuid.uuid4())
+        predict_request_id = 'predict_id-' + str(uuid.uuid4())
 
         print('request id:' + predict_request_id + ' created')
 
