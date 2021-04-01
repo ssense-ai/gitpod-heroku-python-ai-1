@@ -34,12 +34,8 @@ def predict_worker():
             if 'id' in predict_request:
                 print('process:' + predict_request['id'])
                 try:
-                    '''
-                    extractedInformation = pytesseract.image_to_string(Image.open(io.BytesIO(ocr_request['image'])),
-                                                                       lang=ocr_request['lang'], 
-                                                                       config=ocr_request['config'])
-                    '''
-                    result_dict[predict_request['id']] = {'result': extractedInformation,
+                    prediction_result = predict()
+                    result_dict[predict_request['id']] = {'result': prediction_result,
                                                      'time': datetime.datetime.now(),
                                                      'error': None }
                     print('success:' + predict_request['id'])
@@ -60,6 +56,22 @@ def predict_worker():
 prediction_thread = threading.Thread(target=predict_worker)
 prediction_thread.start()
 
+#model読み込み
+with open('lgb_model.pickle', mode='rb') as fp:
+    model = pickle.load(fp)
+
+def predict(test_data):
+    #データ読み込み
+    df_test = pd.read_csv("test.csv")
+
+    #予測
+    prediction_LG = model.predict(df_test)
+
+    #小数を丸めている
+    prediction_LG = np.round(prediction_LG)
+    results = pd.DataFrame({"id": df_test.index, "SalePrice": prediction_LG})
+
+    return results
 
 app = Flask(__name__, static_folder='node_modules')
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
@@ -73,6 +85,40 @@ def root_html():
 @app.route('/predict.js')
 def root_js():
     return send_from_directory(os.path.abspath(os.path.dirname(__file__)),'predict.js')
+
+@app.route('/predict', methods=['POST'])
+@cross_origin(origin='*')
+def process_ocr():
+    try:
+        predict_request_id = 'ocr_recognize_id-' + str(uuid.uuid4())
+
+        print('request id:' + predict_request_id + ' created')
+
+        prediction_queue.put({'id': predict_request_id,
+                              'data': None})
+
+        return jsonify({'status': 'success',
+                        'requestid': ocr_request_id})
+    except Exception as e:
+        return jsonify({'status': 'error',
+                        'requestid': None})  
+
+@app.route('/result')
+@cross_origin(origin='*')
+def process_result():
+    id = request.args['requestid']
+    if id in result_dict:
+        if result_dict[id]['result'] is not None:
+            return jsonify({'status': 'success',
+                        'message': '',
+                        'result': result_dict[id]['result']})
+        else:
+            return jsonify({'status': 'error',
+                        'message': result_dict[id]['error'],
+                        'result': None})
+    else:
+            return jsonify({'status': 'not found'})
+
 
 # Bind to PORT if defined, otherwise default to 5000.
 port = int(os.environ.get('PORT', 5000))

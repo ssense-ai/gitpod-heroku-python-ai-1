@@ -55,4 +55,5 @@ num_round = 100
 model = lgb.train(params, lgb_train, num_boost_round = num_round)
 
 #モデルを保存
-pickle.dump(model, open("lgb_model.pickle", "wb"))
+with open('lgb_model.pickle', mode='wb') as fp:
+    pickle.dump(model, fp)
