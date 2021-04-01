@@ -45,8 +45,8 @@ window.addEventListener( "DOMContentLoaded", function() {
       resultparams.set("type", "result");
       resultparams.set("requestid", predict_request_id);
       for (let i = 0;  i < 30;  i++) {
-        const echo_res = await fetch("/result" + '?' + resultparams.toString())
-        const result_result = await echo_res.json()
+        const echo_res = await fetch("/result" + '?' + resultparams.toString());
+        const result_result = await echo_res.json();
         if ( "result" in result_result && 
              "status" in result_result &&
              result_result["status"] == "success") {
@@ -78,5 +78,12 @@ window.addEventListener( "DOMContentLoaded", function() {
   };
   let btnExecPredict = document.getElementById( "execPredict" );
   btnExecPredict.addEventListener( "click", execPredict );
+
+  (async() => {
+    const default_data_res = await fetch("/default_data");
+    const default_data_text = await default_data_res.text();
+    let target = document.getElementById( "dataText" );
+    target.value = default_data_text;
+  })();
 
 });

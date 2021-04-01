@@ -90,6 +90,10 @@ def root_html():
 def root_js():
     return send_from_directory(os.path.abspath(os.path.dirname(__file__)),'predict.js')
 
+@app.route('/default_data')
+def default_data():
+    return send_from_directory(os.path.abspath(os.path.dirname(__file__)),'test.csv')
+
 @app.route('/predict', methods=['POST'])
 @cross_origin(origin='*')
 def process_predict():
