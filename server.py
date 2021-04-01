@@ -98,7 +98,7 @@ def process_ocr():
                               'data': None})
 
         return jsonify({'status': 'success',
-                        'requestid': ocr_request_id})
+                        'requestid': predict_request_id})
     except Exception as e:
         return jsonify({'status': 'error',
                         'requestid': None})  
