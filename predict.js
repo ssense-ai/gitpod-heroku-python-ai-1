@@ -23,11 +23,13 @@ window.addEventListener( "DOMContentLoaded", function() {
     let predictResult = null;
 
     try {
+      let source = document.getElementById( "dataText" );    
+
       const fetch_predict_res = await fetch("/predict", {
         method: "POST",
         headers: { "Accept": "application/json", "Content-Type": "application/json"},
         body: JSON.stringify({"type": "predict",
-                              "data": null})
+                              "data": source.value})
       });
       const result_predict_json = await fetch_predict_res.json();
       if( !fetch_predict_res.ok ) {

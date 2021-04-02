@@ -35,7 +35,7 @@ def predict_worker():
                 print('process:' + predict_request['id'])
                 try:
                     prediction_result = predict(predict_request['data'])
-                    result_dict[predict_request['id']] = {'result': prediction_result.to_csv(),
+                    result_dict[predict_request['id']] = {'result': prediction_result.to_csv(index=False),
                                                      'time': datetime.datetime.now(),
                                                      'error': None }
                     print('success:' + predict_request['id'])
@@ -62,7 +62,11 @@ with open('lgb_model.pickle', mode='rb') as fp:
 
 def predict(test_data):
     #データ読み込み
-    df_test = pd.read_csv("test.csv")
+    df_test = None
+    if test_data is None:
+        df_test = pd.read_csv("test.csv")
+    else:
+        df_test = pd.read_csv(io.StringIO(test_data))
 
     df_test.index = df_test["Id"]
     df_test.drop("Id", axis = 1, inplace = True)
@@ -98,12 +102,13 @@ def default_data():
 @cross_origin(origin='*')
 def process_predict():
     try:
+        data = request.get_json()['data']
         predict_request_id = 'predict_id-' + str(uuid.uuid4())
 
         print('request id:' + predict_request_id + ' created')
 
         prediction_queue.put({'id': predict_request_id,
-                              'data': None})
+                              'data': data})
 
         return jsonify({'status': 'success',
                         'requestid': predict_request_id})
